@@ -1,5 +1,6 @@
 #include "hardware.h"
 #include <Arduino.h>
+#include <PCF8574.h>
 
 // Pin mapping (matches your hardware)
 #define R1   25

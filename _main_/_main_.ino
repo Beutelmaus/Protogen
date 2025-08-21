@@ -1,28 +1,29 @@
 #include <ESP32-HUB75-MatrixPanel-I2S-DMA.h>
+#include <PCF8574.h>//https://github.com/RobTillaart/PCF8574
+#include <Wire.h>
+
 #include "hardware.h"
 
 #include "functions/handleSerialInput.h"
 #include "functions/rgbTEST.h"
 #include "functions/Smile_1.h"
 #include "functions/draw_image_on_panel.h"
-#include "immages_rgb/immages.cpp" // <-- add this line
+#include "immages_rgb/immages.cpp"
 
 #define PANE_WIDTH  (64 * 1)
 #define PANE_HEIGHT 32
 
 void setup() {
   Serial.begin(115200);
-  delay(100);
+  delay(1000);
   Serial.println(F("*****************************************************"));
   Serial.println(F("*   ESP32-HUB75-MatrixPanel-I2S-DMA Program Switch  *"));
   Serial.println(F("*****************************************************"));
 
- //pinMode(22, INPUT_PULLDOWN);
+  Wire.begin();
+  IO_Module_1.begin();
 
   initDisplay();
-
-  Serial.println("Booting...");
-  delay(1000);
 
   // Start with program 0 (RGB test)
   currentProgram = 0;
@@ -30,15 +31,13 @@ void setup() {
 }
 
 // Placeholder programs (simple solid fills for now)
-void program1() { dma_display->fillScreenRGB888(255, 0, 0);   Serial.println("Running Program 1..."); delay(250); }
-void program2() { dma_display->fillScreenRGB888(0, 255, 0);   Serial.println("Running Program 2..."); delay(250); }
-void program3() {Serial.println("Running Program 3...");
-                  draw_image_on_panel(Smile_2_1, PANE_WIDTH, PANE_HEIGHT);delay(200);
-                  draw_image_on_panel(Smile_2_2, PANE_WIDTH, PANE_HEIGHT);delay(200); 
-                  }
+void program1() { dma_display->fillScreenRGB888(255, 0, 0);}
+void program2() { dma_display->fillScreenRGB888(0, 255, 0);}
+void program3() {draw_image_on_panel(Smile_2_1, PANE_WIDTH, PANE_HEIGHT);delay(200);
+                draw_image_on_panel(Smile_2_2, PANE_WIDTH, PANE_HEIGHT);delay(200);}
 
 void loop() {
-  handleSerialInput(); // program switching + brightness
+   handleSerialInput(); // program switching + brightness
 
 
 

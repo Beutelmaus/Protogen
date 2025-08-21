@@ -62,4 +62,4 @@ void rgbTest() {
   dma_display->fillScreenRGB888(0, 0, 0);
   Serial.println("RGB test cycle complete.");
   delay(1000);
-}255
+}

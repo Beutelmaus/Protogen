@@ -1,55 +1,44 @@
 #include <Arduino.h>
 #include "../hardware.h"
 
+PCF8574 IO_Module_1(0x20); // I2C Adress
+
 void handleSerialInput() {
-  static char buf[16];
-  static uint8_t idx = 0;
 
-  while (Serial.available() > 0) {
-    char c = Serial.read();
-    if (c == '\r') continue;
+  static bool Button_input[4] = {};
+  static bool Button_input_last_Cycle[4] = {};
+  static bool Button_input_Pressed[4] = {};
 
-    if (c == '\n') {
-      // Terminate and reset index
-      buf[idx] = '\0';
-      idx = 0;
+  for (int i = 0; i < 4; i++) {//Detect rising edge
+    Button_input_last_Cycle[i] = Button_input[i];
+    Button_input[i] = IO_Module_1.read(i);
 
-      // Trim leading/trailing spaces
-      char *s = buf;
-      while (*s == ' ') s++;
-      char *e = s + strlen(s);
-      while (e > s && *(e - 1) == ' ') *(--e) = '\0';
+    Button_input_Pressed[i] = Button_input[i] && !Button_input_last_Cycle[i];
+  }
 
-      if (*s == '\0') return; // empty line
+  //Logic Buttons 1 and 2
+  if (Button_input_Pressed[0]) {currentProgram++;}
+  if (Button_input_Pressed[1]) {currentProgram--; }
 
-      // Brightness command: e.g., "50%"
-      size_t len = strlen(s);
-      if (len >= 2 && s[len - 1] == '%') {
-        s[len - 1] = '\0';
-        int percent = atoi(s);
-        if (percent < 0) percent = 0;
-        if (percent > 100) percent = 100;
-        int brightness = map(percent, 0, 100, 0, 255);
-        dma_display->setBrightness8(brightness);
-        Serial.print("Brightness set to ");
-        Serial.print(percent);
-        Serial.println("%");
-        return;
-      }
+  if (currentProgram == -1) currentProgram = 6;
+  if (currentProgram == 7) currentProgram = 0;
 
-      // Program change: 0..5
-      int newProgram = atoi(s);
-      if (newProgram >= 0 && newProgram <= 6) {
-        currentProgram = newProgram;
-        Serial.print("Switched to Program ");
-        Serial.println(currentProgram);
-      } else {
-        Serial.println("Invalid input. Use 0–6 for program or e.g. 50% for brightness.");
-      }
-      return;
+
+
+
+
+  ///////////////////////////////////////////////////////////////////////////////////
+  // Print currentProgram every 500ms
+  static unsigned long lastPrint = 0;
+  if (millis() - lastPrint >= 500) {
+    lastPrint = millis();
+    Serial.print("Current Program: ");
+    Serial.print(currentProgram);
+
+    Serial.print("    Button States: ");
+    for (int i = 0; i < 4; i++) {
+      Serial.print(Button_input[i]);
     }
-
-    // Accumulate until newline or buffer full
-    if (idx < sizeof(buf) - 1) buf[idx++] = c;
+  Serial.println("");
   }
 }
