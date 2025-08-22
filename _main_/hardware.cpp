@@ -1,6 +1,17 @@
 #include "hardware.h"
 #include <Arduino.h>
 #include <PCF8574.h>
+#include <Adafruit_GFX.h>      // Add this
+#include <Adafruit_SSD1327.h>  // Add this
+
+// Add OLED settings
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 128
+#define OLED_RESET -1
+#define OLED_ADDRESS 0x3D
+
+// Declare the OLED display
+Adafruit_SSD1327 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET, 1000000UL);
 
 // Pin mapping (matches your hardware)
 #define R1   25
@@ -22,10 +33,12 @@
 #define PANEL_HEIGHT  32
 #define PANELS_NUMBER 1
 
+PCF8574 IO_Module_1(0x20);
+
 MatrixPanel_I2S_DMA *dma_display = nullptr;
 int currentProgram = 0;
 
-void initDisplay() {
+void initDisplays() {
   HUB75_I2S_CFG mxconfig;
   mxconfig.mx_height = PANEL_HEIGHT;
   mxconfig.chain_length = PANELS_NUMBER;
@@ -51,5 +64,42 @@ void initDisplay() {
 
   if (!dma_display->begin()) {
     Serial.println("****** !KABOOM! I2S memory allocation failed ***********");
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  //1.5 Inch small OLED display
+  if (!display.begin(OLED_ADDRESS)) {
+    Serial.println("SSD1327 allocation failed");
+  }
+  
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1327_WHITE);
+  display.setCursor(0, 0);
+  display.println("Protogen - Menu");
+  display.display();
+}
+
+void scanI2C() {
+  Serial.println("Scanning I2C bus for devices...");
+  byte error, address;
+  int deviceCount = 0;
+  
+  for (address = 1; address < 127; address++) {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+    
+    if (error == 0) {
+      Serial.print("I2C device found at address 0x");
+      if (address < 16) Serial.print("0");
+      Serial.print(address, HEX);
+      Serial.println(" !");
+      deviceCount++;
+    }
+    else if (error == 4) {
+      Serial.print("Unknown error at address 0x");
+      if (address < 16) Serial.print("0");
+      Serial.println(address, HEX);
+    }
   }
 }

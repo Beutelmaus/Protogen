@@ -13,7 +13,7 @@ void rgbTest() {
       handleSerialInput();
       if (currentProgram != 0) return; // exit immediately if program changed
       dma_display->drawPixelRGB888(x, y, 255, 0, 0);
-      delay(5);
+      delay(1);
     }
   }
   delay(100);
@@ -27,7 +27,7 @@ void rgbTest() {
       handleSerialInput();
       if (currentProgram != 0) return;
       dma_display->drawPixelRGB888(x, y, 0, 255, 0);
-      delay(5);
+      delay(1);
     }
   }
   delay(100);
@@ -41,7 +41,7 @@ void rgbTest() {
       handleSerialInput();
       if (currentProgram != 0) return;
       dma_display->drawPixelRGB888(x, y, 0, 0, 255);
-      delay(5);
+      delay(1);
     }
   }
   delay(100);
