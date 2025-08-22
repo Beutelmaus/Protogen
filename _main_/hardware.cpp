@@ -1,17 +1,14 @@
 #include "hardware.h"
 #include <Arduino.h>
 #include <PCF8574.h>
-#include <Adafruit_GFX.h>      // Add this
-#include <Adafruit_SSD1327.h>  // Add this
+#include <Adafruit_GFX.h>    
+#include <Adafruit_SSD1327.h>
 
 // Add OLED settings
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 128
 #define OLED_RESET -1
 #define OLED_ADDRESS 0x3D
-
-// Declare the OLED display
-Adafruit_SSD1327 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET, 1000000UL);
 
 // Pin mapping (matches your hardware)
 #define R1   25
@@ -34,9 +31,11 @@ Adafruit_SSD1327 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET, 1000000
 #define PANELS_NUMBER 1
 
 PCF8574 IO_Module_1(0x20);
+Adafruit_SSD1327 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET, 1000000UL);
 
 MatrixPanel_I2S_DMA *dma_display = nullptr;
 int currentProgram = 0;
+uint8_t selected_colour_value[3] = {255, 255, 255};
 
 void initDisplays() {
   HUB75_I2S_CFG mxconfig;

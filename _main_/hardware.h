@@ -5,6 +5,7 @@
 
 extern MatrixPanel_I2S_DMA *dma_display;
 extern int currentProgram;
+extern uint8_t selected_colour_value[3];
 extern PCF8574 IO_Module_1;
 extern Adafruit_SSD1327 display;
 

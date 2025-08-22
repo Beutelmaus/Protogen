@@ -1,8 +1,9 @@
-// REMOVE THIS LINE: #include "functions/draw_animation.cpp"  <-- DELETE THIS
+
 #include "../hardware.h"
 #include "../Animations/animations.cpp"
 
-void draw_animation(const char* animationName, uint8_t r, uint8_t g, uint8_t b, int frameDelay) {
+extern uint8_t selected_colour_value[3];
+void draw_animation(const char* animationName, int frameDelay) {
     static unsigned long lastFrameTime = 0;
     static int currentFrame = 0;
     
@@ -16,9 +17,12 @@ void draw_animation(const char* animationName, uint8_t r, uint8_t g, uint8_t b, 
             for (int y = 0; y < 32; y++) {
                 for (int x = 0; x < 64; x++) {
                     uint8_t brightness = Smile[currentFrame][y][x];
-                    uint8_t scaled_r = (uint16_t(r) * brightness) / 255;
-                    uint8_t scaled_g = (uint16_t(g) * brightness) / 255;
-                    uint8_t scaled_b = (uint16_t(b) * brightness) / 255;
+                    
+                    // Use selected_colour_value instead of passed parameters
+                    uint8_t scaled_r = (uint16_t(selected_colour_value[0]) * brightness) / 255;
+                    uint8_t scaled_g = (uint16_t(selected_colour_value[1]) * brightness) / 255;
+                    uint8_t scaled_b = (uint16_t(selected_colour_value[2]) * brightness) / 255;
+                    
                     dma_display->drawPixelRGB888(x, y, scaled_r, scaled_g, scaled_b);
                 }
             }

@@ -4,18 +4,13 @@
 
 #include "hardware.h"
 #include "MenueAndButtons.h"
-#include "functions/Menues.cpp"
 
 #include "functions/rgbTEST.h"
-#include "functions/rgbTEST.cpp"
 #include "functions/draw_image_on_panel.h"
-#include "functions/draw_image_on_panel.cpp"
 #include "functions/draw_animation.h"
-#include "functions/draw_animation.cpp"
-
 #include "immages_rgb/immages.cpp"
 
-
+String selected_colour_Name = "White";
 
 void setup() {
   Serial.begin(115200);
@@ -30,9 +25,9 @@ void setup() {
   scanI2C();
   initDisplays();
 
-  // Start with program 0 (RGB test)
+  // Start with program 1
   currentProgram = 1;
-  Serial.println("Starting with Program 0 (RGB Test)");
+  Serial.println("Starting with Program 1");
 }
 
 // Placeholder programs (simple solid fills for now)
@@ -45,18 +40,22 @@ void loop() {
    MenueAndButtons(); // program switching + brightness
 
   switch (currentProgram) {
+    case  -1: currentProgram = 9; break;
     case 0: rgbTest(); break;
     case 1: draw_image_on_panel(Smile_static); break;
     case 2: program2(); break;
     case 3: program3(); break;
     case 4: draw_image_on_panel(Smile_1); break;
     case 5: draw_image_on_panel(Smile_2); break;
-    case 6:  draw_animation("Smile", 125, 255, 50, 100); break; //
-    case 7: draw_animation("Smile", 255, 255, 255, 150); break; // White Smile, 150ms per frame
-    case 8: draw_animation("Smile", 255, 0, 0, 200); break; // Red Smile, 200ms per frame
-    case 9: draw_animation("Smile", 0, 255, 0, 100); break; // Green Smile, 100ms per frame
+    case 6:  draw_animation("Smile", 100); break;
+    case 7: draw_animation("Smile", 150); break;
+    case 8: draw_animation("Smile", 200); break;
+    case 9: draw_animation("Smile", 100); break;
+    case 10: currentProgram = 1; break;
   }
 }
 
-
-
+// Include .cpp for the arduino compiler
+#include "functions/rgbTEST.cpp"
+#include "functions/draw_image_on_panel.cpp"
+#include "functions/draw_animation.cpp"
