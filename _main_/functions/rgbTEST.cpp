@@ -1,65 +1,59 @@
 #include <Arduino.h>
 #include "../hardware.h"
-#include "handleSerialInput.h"
-
-#define PANE_WIDTH  (64 * 1)
-#define PANE_HEIGHT 32
+#include "../MenueAndButtons.h"
 
 void rgbTest() {
-  // --- RED ---
-  Serial.println("Filling screen with RED...");
-  for (int y = 0; y < PANE_HEIGHT; y++) {
-    for (int x = 0; x < PANE_WIDTH; x++) {
-      handleSerialInput();
-      if (currentProgram != 0) return; // exit immediately if program changed
-      dma_display->drawPixelRGB888(x, y, 255, 0, 0);
-      delay(1);
+  static int testState = 0;  // 0=RED, 1=GREEN, 2=BLUE, 3=WHITE
+  static unsigned long stateStartTime = 0;
+  static int lastTestState = -1; // Track when state changes
+  
+  const unsigned long STATE_DURATION = 1500;
+  
+  unsigned long currentTime = millis();
+  
+  // Reset if program changed
+  if (currentProgram != 0) {
+    testState = 0;
+    lastTestState = -1;
+    return; // Exit immediately
+  }
+  
+  // Check if state changed and reset timer
+  if (testState != lastTestState) {
+    stateStartTime = currentTime;
+    lastTestState = testState;
+    
+    // Display the new color
+    switch (testState) {
+      case 0: // RED
+        Serial.println("Filling screen with RED...");
+        dma_display->fillScreenRGB888(255, 0, 0);
+        break;
+        
+      case 1: // GREEN
+        Serial.println("Filling screen with GREEN...");
+        dma_display->fillScreenRGB888(0, 255, 0);
+        break;
+        
+      case 2: // BLUE
+        Serial.println("Filling screen with BLUE...");
+        dma_display->fillScreenRGB888(0, 0, 255);
+        break;
+        
+      case 3: // WHITE
+        Serial.println("Filling screen with WHITE...");
+        dma_display->fillScreenRGB888(255, 255, 255);
+        break;
     }
   }
-  delay(100);
-  dma_display->fillScreenRGB888(0, 0, 0);
-  delay(100);
-
-  // --- GREEN ---
-  Serial.println("Filling screen with GREEN...");
-  for (int y = 0; y < PANE_HEIGHT; y++) {
-    for (int x = 0; x < PANE_WIDTH; x++) {
-      handleSerialInput();
-      if (currentProgram != 0) return;
-      dma_display->drawPixelRGB888(x, y, 0, 255, 0);
-      delay(1);
+  
+  // Check if time to advance to next state
+  unsigned long elapsedTime = currentTime - stateStartTime;
+  if (elapsedTime >= STATE_DURATION) {
+    testState++;
+    if (testState > 3) {
+      Serial.println("RGB test cycle complete.");
+      testState = 0; // Reset to start over
     }
   }
-  delay(100);
-  dma_display->fillScreenRGB888(0, 0, 0);
-  delay(100);
-
-  // --- BLUE ---
-  Serial.println("Filling screen with BLUE...");
-  for (int y = 0; y < PANE_HEIGHT; y++) {
-    for (int x = 0; x < PANE_WIDTH; x++) {
-      handleSerialInput();
-      if (currentProgram != 0) return;
-      dma_display->drawPixelRGB888(x, y, 0, 0, 255);
-      delay(1);
-    }
-  }
-  delay(100);
-  dma_display->fillScreenRGB888(0, 0, 0);
-  delay(100);
-
-  // --- White ---
-  Serial.println("Filling screen with BLUE...");
-  for (int y = 0; y < PANE_HEIGHT; y++) {
-    for (int x = 0; x < PANE_WIDTH; x++) {
-      handleSerialInput();
-      if (currentProgram != 0) return;
-      dma_display->drawPixelRGB888(x, y, 255, 255, 255);
-      delay(10);
-    }
-  }
-  delay(1000);
-  dma_display->fillScreenRGB888(0, 0, 0);
-  Serial.println("RGB test cycle complete.");
-  delay(1000);
 }

@@ -4,7 +4,9 @@
 #include <Adafruit_SSD1327.h>
 extern Adafruit_SSD1327 display;
 
-void handleSerialInput() {
+#include "functions/Menues.h"
+
+void MenueAndButtons() {
 
   static bool Button_input[4] = {};
   static bool Button_input_last_Cycle[4] = {};
@@ -24,10 +26,6 @@ void handleSerialInput() {
   if (currentProgram == -1) currentProgram = 9;
   if (currentProgram == 10) currentProgram = 0;
 
-
-
-
-
   ///////////////////////////////////////////////////////////////////////////////////
   // Print currentProgram every 500ms
   static unsigned long lastPrint = 0;
@@ -43,36 +41,34 @@ void handleSerialInput() {
   Serial.println("");
   }
 
-
   ///////////////////////////////////////////////////////////////////////////////////
-  // Print Screen
+  // Menue Screen
 
-    // Title
+  // Title
   display.clearDisplay();
   display.setTextSize(1);
   display.setCursor(0, 0);
-  display.println("Button Status:");
+  display.println("Protogen - Menu");
   
-  // Button states
-  display.setCursor(0, 16);
-  display.print("BTN0: ");
-  display.println(Button_input[0] ? "ON " : "OFF");
-  
-  display.setCursor(0, 26);
-  display.print("BTN1: ");
-  display.println(Button_input[1] ? "ON " : "OFF");
-  
-  display.setCursor(0, 36);
-  display.print("BTN2: ");
-  display.println(Button_input[2] ? "ON " : "OFF");
-  
-  display.setCursor(0, 46);
-  display.print("BTN3: ");
-  display.println(Button_input[3] ? "ON " : "OFF");
-  
-  // Output status
-  display.setCursor(0, 56);
-  display.print("OUT7: ");
-  display.println(!Button_input[0] ? "HIGH" : "LOW");
+  // Program status
+  display.setCursor(0, 100);
+  display.print("Program: ");
+  display.println(getProgramName(currentProgram));
+
+  // Display a color name
+  display.print("Color: ");
+  display.println(getColorName(2)); // Shows "Red"
+
+  // Get RGB values for a color
+  uint8_t r, g, b;
+  getColorRGB(2, &r, &g, &b); // Gets RGB for "Red" (255, 0, 0)
+
+  // All buttons in one compact line
+  display.setCursor(0, 116);
+  display.print( "0");display.print(Button_input[0] ? "L" : "H");
+  display.print(" 1");display.print(Button_input[1] ? "L" : "H");
+  display.print(" 2");display.print(Button_input[2] ? "L" : "H");
+  display.print(" 3");display.print(Button_input[3] ? "L" : "H");
+
   display.display();
 }
