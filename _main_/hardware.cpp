@@ -58,12 +58,21 @@ void initDisplays() {
   mxconfig.gpio.lat = LAT;
   mxconfig.gpio.oe = OE;
 
+  // Configure for better WiFi compatibility
+  mxconfig.clkphase = false;
+  mxconfig.latch_blanking = 4;  // Increase latch blanking for stability
+  mxconfig.i2sspeed = HUB75_I2S_CFG::HZ_10M; // Reduce I2S speed to minimize interference
+  
   dma_display = new MatrixPanel_I2S_DMA(mxconfig);
   dma_display->setBrightness8(50);
 
   if (!dma_display->begin()) {
     Serial.println("****** !KABOOM! I2S memory allocation failed ***********");
   }
+
+  // Clear any potential artifacts
+  dma_display->clearScreen();
+  dma_display->flipDMABuffer();
 
   //////////////////////////////////////////////////////////////////////////////
   //1.5 Inch small OLED display
