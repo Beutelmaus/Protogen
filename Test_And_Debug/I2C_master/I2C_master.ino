@@ -22,15 +22,62 @@ void setup() {
 
 void loop() {
   static int counter = 0; // Counter to send to the slave
+  static int colorCounter = 0; // Counter for cycling through colors
+  
+  // Define some test colors (R, G, B)
+  uint8_t colors[][3] = {
+    {255, 0, 0},    // Red
+    {0, 255, 0},    // Green
+    {0, 0, 255},    // Blue
+    {255, 255, 0},  // Yellow
+    {255, 0, 255},  // Magenta
+    {0, 255, 255},  // Cyan
+    {255, 255, 255} // White
+  };
+  int numColors = sizeof(colors) / sizeof(colors[0]);
+  
+  // Condition to determine when to send data (always true in this example)
+  bool shouldSend = true; // You can change this condition as needed
+  
+  if (shouldSend) {
+    // Start I2C transmission to the slave
+    Wire.beginTransmission(SLAVE_ADDRESS);
+    
+    // Send command byte (0x01 for program change)
+    Wire.write(0x01);
+    
+    // Send the program number (cycling through 0-3)
+    int programNumber = counter % 9;
+    Wire.write(programNumber);
+    
+    // Send the 3 color values (R, G, B)
+    Wire.write(colors[colorCounter][0]); // Red
+    Wire.write(colors[colorCounter][1]); // Green
+    Wire.write(colors[colorCounter][2]); // Blue
+    
+    uint8_t result = Wire.endTransmission(); // End the transmission
+    
+    if (result == 0) {
+      Serial.print("Sent program: ");
+      Serial.print(programNumber);
+      Serial.print(" with color RGB(");
+      Serial.print(colors[colorCounter][0]);
+      Serial.print(", ");
+      Serial.print(colors[colorCounter][1]);
+      Serial.print(", ");
+      Serial.print(colors[colorCounter][2]);
+      Serial.println(")");
+    } else {
+      Serial.print("I2C transmission failed with error: ");
+      Serial.println(result);
+    }
+    
+    // Increment counters
+    counter++;
+    colorCounter = (colorCounter + 1) % numColors; // Cycle through colors
+  } else {
+    Serial.println("Condition false - not sending data");
+  }
 
-  // Start I2C transmission to the slave
-  Wire.beginTransmission(SLAVE_ADDRESS);
-  Wire.write(counter); // Send the counter value
-  Wire.endTransmission(); // End the transmission
-
-  Serial.print("Sent: ");
-  Serial.println(counter);
-
-  counter++; // Increment the counter
-  delay(1000); // Wait for 1 second
+  delay(2000); // Wait for 2 seconds
 }
