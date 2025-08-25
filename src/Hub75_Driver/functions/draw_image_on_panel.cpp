@@ -7,6 +7,7 @@ void draw_image_on_panel(const uint8_t image[][64][3]) {
     static bool lastImageSame = false;
     static const uint8_t* lastImagePtr = nullptr;
     
+    
     for (int y = 0; y < 32; y++) {
         for (int x = 0; x < 64; x++) {
             // Get the original image brightness values

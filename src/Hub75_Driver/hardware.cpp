@@ -41,36 +41,12 @@ void initDisplays() {
   
   // Startup test pattern
   dma_display->fillScreen(dma_display->color565(50, 0, 0));
-  delay(300);
+  delay(3000);
   dma_display->fillScreen(dma_display->color565(0, 50, 0));
-  delay(300);
+  delay(3000);
   dma_display->fillScreen(dma_display->color565(0, 0, 50));
-  delay(300);
+  delay(3000);
   dma_display->clearScreen();
   
   Serial.println("HUB75 Matrix Display initialized successfully");
-}
-
-void scanI2C() {
-  Serial.println("Scanning I2C bus for devices...");
-  byte error, address;
-  int deviceCount = 0;
-  
-  for (address = 1; address < 127; address++) {
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
-    
-    if (error == 0) {
-      Serial.print("I2C device found at address 0x");
-      if (address < 16) Serial.print("0");
-      Serial.print(address, HEX);
-      Serial.println(" !");
-      deviceCount++;
-    }
-    else if (error == 4) {
-      Serial.print("Unknown error at address 0x");
-      if (address < 16) Serial.print("0");
-      Serial.println(address, HEX);
-    }
-  }
 }

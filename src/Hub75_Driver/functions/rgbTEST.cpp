@@ -26,22 +26,22 @@ void rgbTest() {
     switch (testState) {
       case 0: // RED
         Serial.println("Filling screen with RED...");
-        dma_display->fillScreenRGB888(50, 0, 0);
+        dma_display->fillScreenRGB888(255, 0, 0);
         break;
         
       case 1: // GREEN
         Serial.println("Filling screen with GREEN...");
-        dma_display->fillScreenRGB888(0, 50, 0);
+        dma_display->fillScreenRGB888(0, 255, 0);
         break;
         
       case 2: // BLUE
         Serial.println("Filling screen with BLUE...");
-        dma_display->fillScreenRGB888(0, 0, 50);
+        dma_display->fillScreenRGB888(0, 0, 255);
         break;
         
       case 3: // WHITE
         Serial.println("Filling screen with WHITE...");
-        dma_display->fillScreenRGB888(50, 50, 50);
+        dma_display->fillScreenRGB888(255, 255, 255);
         break;
     }
   }
